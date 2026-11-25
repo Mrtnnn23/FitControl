@@ -1,0 +1,92 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}FitControl · Tu gimnasio, conectado{% endblock %}</title>
+        <link rel="stylesheet" href="{% static 'fitcontrol.css' %}">
+    </head>
+    <body>
+        <div class="shell">
+            <aside class="sidebar" id="sidebar">
+                <a class="brand" href="{% url 'inicio' %}"><span class="brand-mark">f<span>c</span></span> FitControl<span class="brand-dot">®</span></a>
+                <div class="workspace">
+                    <span class="workspace-icon">F</span>
+                    <div>
+                        <strong>FitControl</strong>
+                        <small>Gestión del gimnasio</small>
+                    </div>
+                    <span class="online"></span>
+                </div>
+                <p class="nav-label">TU ESPACIO</p>
+                <nav>
+                    <a href="{% url 'inicio' %}" class="{% if request.resolver_match.url_name == 'inicio' %}active{% endif %}"><span>◫</span>Vista general</a>
+                    {% if rol == 'Administrador' %}
+                        <a href="{% url 'registros' 'socios' %}" class="{% if tipo == 'socios' %}active{% endif %}"><span>♧</span>Socios</a>
+                        <a href="{% url 'registros' 'membresias' %}" class="{% if tipo == 'membresias' %}active{% endif %}"><span>▣</span>Membresías</a>
+                        <a href="{% url 'registros' 'pagos' %}" class="{% if tipo == 'pagos' %}active{% endif %}"><span>↗</span>Pagos</a>
+                        <a href="{% url 'registros' 'entrenadores' %}" class="{% if tipo == 'entrenadores' %}active{% endif %}"><span>◎</span>Entrenadores</a>
+                    {% elif rol == 'Socio' %}
+                        <a href="{% url 'mi_membresia' %}"><span>▣</span>Mi membresía</a>
+                    {% endif %}
+                    <a href="{% url 'clases' %}" class="{% if request.resolver_match.url_name == 'clases' or request.resolver_match.url_name == 'clase' %}active{% endif %}"><span>▦</span>{% if rol == 'Entrenador' %}Mis clases{% else %}Clases y horarios{% endif %}</a>
+                    {% if rol != 'Entrenador' %}
+                        <a href="{% url 'reservas' %}" class="{% if request.resolver_match.url_name == 'reservas' %}active{% endif %}"><span>✓</span>{% if rol == 'Socio' %}Mis reservas{% else %}Reservas{% endif %}</a>
+                    {% endif %}
+                    {% if rol == 'Administrador' %}
+                        <a href="{% url 'asistencias' %}" class="{% if request.resolver_match.url_name == 'asistencias' %}active{% endif %}"><span>⇥</span>Asistencias</a>
+                        <a href="{% url 'reportes' %}" class="{% if request.resolver_match.url_name == 'reportes' %}active{% endif %}"><span>▥</span>Reportes</a>
+                    {% else %}
+                        <a href="{% url 'perfil' %}"><span>⚙</span>Mi perfil</a>
+                    {% endif %}
+                </nav>
+                <div class="sidebar-bottom">
+                    <div class="studio-note">
+                        <span class="eyebrow">CADA DÍA CUENTA</span>
+                        <p>Más movimiento.<br>Mejor comunidad.</p>
+                        <span class="mini-line"></span>
+                    </div>
+                    <div class="user">
+                        <span class="avatar">{{ user.first_name|default:user.username|slice:':1'|upper }}</span>
+                        <div>
+                            <strong>{{ user.first_name|default:user.username }}</strong>
+                            <small>{{ rol }}</small>
+                        </div>
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button class="logout" title="Cerrar sesión" aria-label="Cerrar sesión">↪</button>
+                        </form>
+                    </div>
+                </div>
+            </aside>
+            <div class="main">
+                <header class="topbar">
+                    <button class="mobile-toggle" aria-label="Abrir menú" aria-expanded="false">☰</button>
+                    <span>PANEL <b>/</b> {{ rol }}</span>
+                    <div class="top-right">
+                        <span class="live-dot"></span>
+                        {{ hoy|date:'l, d M Y' }}
+                        <span class="top-avatar">{{ user.first_name|default:user.username|slice:':1'|upper }}</span>
+                    </div>
+                </header>
+                <main id="contenido">
+                    {% for message in messages %}
+                        <div class="alert {{ message.tags }}" role="status">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                    {% block content %}
+                    {% endblock %}
+                </main>
+                <footer class="footer">
+                    FitControl
+                    <span>Hecho para que tu comunidad siga en movimiento.</span>
+                    <span>GESTIÓN · CONEXIÓN · BIENESTAR</span>
+                </footer>
+            </div>
+        </div>
+        <script src="{% static 'fitcontrol.js' %}">
+        </script>
+    </body>
+</html>

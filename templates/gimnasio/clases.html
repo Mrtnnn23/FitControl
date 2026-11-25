@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="page-heading">
+        <div>
+            <span class="eyebrow">ENCUENTRA TU RITMO</span>
+            <h1>{% if rol == 'Entrenador' %}Mis clases{% else %}Clases y horarios{% endif %}</h1>
+            <p>Un espacio para entrenar, conectar y superar tus metas.</p>
+        </div>
+        {% if rol == 'Administrador' %}
+            <a class="btn primary" href="{% url 'nuevo' 'clases' %}">＋ Programar clase</a>
+        {% endif %}
+    </div>
+    <form class="filterbar" method="get">
+        <input type="search" name="q" value="{{ q }}" placeholder="Buscar una clase…" aria-label="Buscar clase">
+        <select name="agenda" aria-label="Período">
+            <option value="proximas">Próximas clases</option>
+            <option value="todas" {% if request.GET.agenda == 'todas' %}selected{% endif %}>Todas las fechas</option>
+        </select>
+        <button class="btn dark">Filtrar</button>
+    </form>
+    <div class="class-grid">
+        {% for clase in clases %}
+            <article class="class-card">
+                <div class="class-visual visual-{% cycle 'a' 'b' 'c' %}">
+                    <span class="badge">{{ clase.estado }}</span>
+                    <span class="class-number">{% cycle '01' '02' '03' %}</span>
+                    <span class="visual-word">{% cycle 'ACTÍVATE' 'FUERZA' 'ENFOQUE' %}</span>
+                    <span class="visual-circle"></span>
+                </div>
+                <div class="class-body">
+                    <div class="class-meta">
+                        {{ clase.fecha|date:'D d M' }}
+                        <span>·</span>
+                        {{ clase.hora|time:'H:i' }}
+                        h
+                    </div>
+                    <h2>{{ clase.nombre }}</h2>
+                    <p>{{ clase.descripcion|default:'Una sesión para dar lo mejor de ti.' }}</p>
+                    <div class="trainer-line">
+                        <span class="avatar soft">{{ clase.entrenador.nombre|slice:':1' }}</span>
+                        {{ clase.entrenador.nombre }}
+                    </div>
+                    <div class="class-bottom">
+                        <span>{{ clase.cupos_disponibles }} / {{ clase.cupo_maximo }} cupos libres</span>
+                        <a class="btn subtle" href="{% url 'clase' clase.pk %}">Ver clase ↗</a>
+                    </div>
+                </div>
+            </article>
+        {% empty %}
+            <div class="panel empty">
+                <h3>No hay clases para esta búsqueda</h3>
+                <p>Prueba con otro nombre o consulta todas las fechas.</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

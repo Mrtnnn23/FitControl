@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="page-heading">
+        <div>
+            <span class="eyebrow">TU COMPROMISO CONTIGO</span>
+            <h1>Mi membresía</h1>
+            <p>Consulta tu plan, sus fechas y tu estado de acceso.</p>
+        </div>
+    </div>
+    <div class="class-grid">
+        {% for m in membresias %}
+            <article class="panel membership-card">
+                <span class="eyebrow">MI MEMBRESÍA</span>
+                <h2>Plan {{ m.tipo_plan }}</h2>
+                <span class="badge {% if m.verificar_vigencia %}green{% endif %}">{% if m.verificar_vigencia %}Vigente{% else %}No vigente · {{ m.estado }}{% endif %}</span>
+                <div class="membership-price">
+                    $
+                    {{ m.precio }}
+                    <small>CLP</small>
+                </div>
+                <dl>
+                    <dt>Fecha de inicio</dt>
+                    <dd>{{ m.fecha_inicio|date:'d/m/Y' }}</dd>
+                    <dt>Vencimiento</dt>
+                    <dd>{{ m.fecha_fin|date:'d/m/Y' }}</dd>
+                </dl>
+                <p>Para renovar tu plan, comunícate con la administración.</p>
+            </article>
+        {% empty %}
+            <div class="panel empty">
+                <h3>Aún no tienes una membresía</h3>
+                <p>Solicita tu plan al administrador para comenzar a reservar clases.</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="page-heading">
+        <div>
+            <span class="eyebrow">TU GIMNASIO, EN UN VISTAZO</span>
+            <h1>Hola, {{ nombre_corto }} <span class="wave">✳</span></h1>
+            <p>Todo listo para un nuevo día en movimiento.</p>
+        </div>
+        {% if rol == 'Administrador' %}
+            <a class="btn primary" href="{% url 'nuevo' 'socios' %}">＋ Registrar socio</a>
+        {% else %}
+            <a class="btn primary" href="{% url 'clases' %}">Ver mi agenda ↗</a>
+        {% endif %}
+    </div>
+    <section class="stats">
+        {% for label,value,note in stats %}
+            <article class="stat">
+                <div class="stat-label">
+                    {{ label }}
+                    <span>↗</span>
+                </div>
+                <strong>{{ value }}</strong>
+                <small><i></i>{{ note }}</small>
+            </article>
+        {% endfor %}
+    </section>
+    <section class="feature-banner">
+        <div>
+            <span class="eyebrow">{% if rol == 'Administrador' %}MENOS GESTIÓN. MÁS CONEXIÓN.{% else %}TU PRÓXIMO PASO EMPIEZA AQUÍ{% endif %}</span>
+            <h2>Una comunidad que<br>no deja de moverse.</h2>
+            <p>Organiza cada clase. Acompaña cada progreso.</p>
+            <a href="{% url 'clases' %}" class="btn dark">Explorar clases <span>↗</span></a>
+        </div>
+        <div class="banner-art" aria-hidden="true">
+            <span class="ring"></span>
+            <span class="ring second"></span>
+            <b>SIGUE<br>AVANZANDO.</b>
+            <span class="art-caption">FUERZA EN COMUNIDAD</span>
+        </div>
+    </section>
+    <div class="dashboard-grid">
+        <section class="panel">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">EN EL CALENDARIO</span>
+                    <h2>Próximas clases</h2>
+                </div>
+                <a class="text-link" href="{% url 'clases' %}">Ver agenda ↗</a>
+            </div>
+            {% for clase in clases %}
+                <a class="class-row" href="{% url 'clase' clase.pk %}">
+                    <div class="date-tile">
+                        <strong>{{ clase.fecha|date:'d' }}</strong>
+                        <small>{{ clase.fecha|date:'M' }}</small>
+                    </div>
+                    <div class="row-info">
+                        <strong>{{ clase.nombre }}</strong>
+                        <small>{{ clase.entrenador.nombre }} · {{ clase.hora|time:'H:i' }} h</small>
+                    </div>
+                    <span class="badge">{{ clase.cupos_disponibles }} cupos</span>
+                    <span>↗</span>
+                </a>
+            {% empty %}
+                <div class="empty">
+                    <span>▦</span>
+                    <h3>Tu agenda está despejada</h3>
+                    <p>Las próximas clases aparecerán aquí.</p>
+                </div>
+            {% endfor %}
+        </section>
+        <section class="panel">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">{% if rol == 'Administrador' %}SEGUIMIENTO{% else %}TU ACTIVIDAD{% endif %}</span>
+                    <h2>{% if rol == 'Administrador' %}Próximos vencimientos{% else %}Últimas reservas{% endif %}</h2>
+                </div>
+            </div>
+            {% if rol == 'Administrador' %}
+                {% for m in vencimientos %}
+                    <div class="activity-row">
+                        <span class="avatar soft">{{ m.socio.nombre|slice:':1' }}</span>
+                        <div>
+                            <strong>{{ m.socio.nombre }}</strong>
+                            <small>{{ m.tipo_plan }} · vence {{ m.fecha_fin|date:'d M' }}</small>
+                        </div>
+                        <a class="text-link" href="{% url 'editar' 'membresias' m.pk %}?renovar=1">Renovar ↗</a>
+                    </div>
+                {% empty %}
+                    <div class="empty">
+                        <p>Aquí verás las membresías por vencer.</p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                {% for reserva in actividad %}
+                    <div class="activity-row">
+                        <span class="avatar soft">✓</span>
+                        <div>
+                            <strong>{{ reserva.clase.nombre }}</strong>
+                            <small>{{ reserva.clase.fecha|date:'d M' }} · {{ reserva.estado }}</small>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="empty">
+                        <span>✳</span>
+                        <h3>Todo empieza con una clase</h3>
+                        <p>Consulta tu agenda y prepara tu próxima sesión.</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </section>
+    </div>
+{% endblock %}
