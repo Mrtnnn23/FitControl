@@ -1,21 +1,25 @@
 # FitControl
 
-Aplicación de gestión de gimnasio con Django y PostgreSQL en Supabase. Incluye cuentas de administrador, socios y entrenadores; membresías, pagos administrativos, clases, reservas, asistencias y reportes.
+Proyecto de Ingeniería de Software para administrar un gimnasio. Permite registrar socios y entrenadores, gestionar membresías y pagos, organizar clases y llevar el control de reservas y asistencias.
 
-## Publicación en Vercel
+El administrador gestiona los registros y crea las cuentas. Los socios pueden consultar su membresía y reservar clases; los entrenadores revisan sus clases y registran la asistencia.
 
-1. Importar este repositorio y seleccionar Django. La raíz debe contener `manage.py`.
-2. Configurar `DATABASE_URL` y `DJANGO_SECRET_KEY` en las variables de entorno del proyecto.
-3. Publicar. Vercel detecta WSGI y ejecuta `collectstatic`; los archivos se sirven desde su CDN.
-4. Comprobar inicio y cierre de sesión, permisos, reservas y archivos estáticos en el enlace final.
+Está desarrollado con Python, Django, HTML, CSS y JavaScript. Usa PostgreSQL en Supabase y también permite trabajar con MariaDB en local.
 
-La base de Supabase ya está migrada. El despliegue no crea cuentas ni reemplaza registros. Las migraciones futuras se ejecutan de forma controlada con `python manage.py migrate` contra el destino elegido.
+## Cómo ejecutarlo
 
-## Desarrollo local
+Crea tu propia base de datos y configura la conexión en `.env.local`. Puedes usar `DATABASE_URL` para PostgreSQL o las variables `DB_NAME`, `DB_USER` y `DB_PASSWORD` para MariaDB. En `.env.example` hay una referencia de las variables.
 
-Instalar las dependencias de `requirements.txt`. MariaDB sigue siendo la opción local cuando no se configura `DATABASE_URL`. Las credenciales locales se guardan en `.env.local`, ignorado por Git. Para conectar a PostgreSQL se puede definir `DATABASE_URL` en ese archivo.
+Desde la carpeta donde está `manage.py`:
 
-`python manage.py runserver`
+```bash
+python -m pip install -r requirements.txt
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+```
+
+Al crear el administrador, ingresa un correo para poder iniciar sesión. Luego abre http://127.0.0.1:8000/.
 
 ## Pruebas
 
@@ -26,4 +30,4 @@ $env:FITCONTROL_SQLITE="1"
 python manage.py test gimnasio
 ```
 
-La suite usa una base temporal. Las cuentas y los datos del proyecto son ficticios. Las contraseñas y los respaldos no se incluyen en este repositorio.
+Las pruebas usan una base temporal. Los datos del proyecto son ficticios; las contraseñas y los respaldos quedan fuera del repositorio.
